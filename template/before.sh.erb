@@ -1,13 +1,14 @@
 <%-
-  avail_cores = context.node_type.include?("hugemem") ? 48   : 28
-  avail_mem   = context.node_type.include?("hugemem") ? 1528 : 120
+  avail_cores = context.pbs_ncpus.to_i
+  avail_mem   = context.pbs_mem.to_i
   num_workers = context.num_workers.to_i
+  num_nodes = context.pbs_select.to_i
   torque_cluster = OodAppkit.clusters[context.cluster].job_config[:adapter] == 'torque'
 
   py4j =  case context.spark_version
-          when "2.3.0"
-            "py4j-0.10.6-src.zip"
-          when "3.0.1"
+          when "2.4.5"
+            "py4j-0.10.7-src.zip"
+          when "3.1.2"
             "py4j-0.10.9-src.zip"
           # just in case we update spark_version without updating this!
           else
@@ -71,30 +72,16 @@ c.NotebookApp.disable_check_xsrf = True
 EOL
 )
 
-<%- if context.include_tutorials == "1" -%>
-#
-# Create workshop/tutorial notebooks
-#
-
-export tutorials_root="/jupyter/tutorials/jupyter_spark" # connection variable
-export TUTORIALS_ROOT="${NOTEBOOK_ROOT}${tutorials_root}"
-mkdir -p "${TUTORIALS_ROOT}"
-
-# Copy over workshops/tutorials
-set -x
-ln -sfn "/users/PZS0645/support/workshop/Bigdata"/*.ipynb "${TUTORIALS_ROOT}"
-symlinks -d "${TUTORIALS_ROOT}"
-{ set +x; } 2>/dev/null
-<%- end -%>
-
 # Clean the environment
 module purge
 
 # Load the runtime environment
 runtime_env() {
   module purge
-  module load xalt/latest python/3.6 spark/<%= context.spark_version %>
-
+  module load anaconda3/<%= context.anaconda_version %>-gcc/8.3.1 spark/<%= context.spark_version %>-gcc/8.3.1
+  export SPARK_HOME=$SPARK_ROOT
+  export HADOOP_HOME="/software/spackages/linux-centos8-x86_64/gcc-8.3.1/hadoop-3.2.1-lux74iyfcxxzatxh4em67xezesi4z4i4"
+  export SPARK_DIST_CLASSPATH=$(${HADOOP_HOME}/bin/hadoop classpath)
   # Disable randomized hash for string in Python 3.3+
   export PYTHONHASHSEED=0
 }
@@ -110,7 +97,8 @@ mkdir "${LOG_ROOT}"
 # Set master connection information
 export SPARK_MASTER_HOST=${host}
 export SPARK_MASTER_PORT=$(find_port ${SPARK_MASTER_HOST})
-export SPARK_MASTER_WEBUI_PORT=$(find_port ${SPARK_MASTER_HOST})
+spark_webui_port=$(find_port ${SPARK_MASTER_HOST})
+export SPARK_MASTER_WEBUI_PORT=${spark_webui_port}
 
 # Generate Spark secret
 SPARK_SECRET="$(create_passwd)"
@@ -160,10 +148,11 @@ export SPARK_WORKER_SCRIPT="${PWD}/spark-worker.sh"
 umask 077
 sed 's/^ \{2\}//' > "${SPARK_WORKER_SCRIPT}" << EOL
   #!/usr/bin/bash -l
-
-  <%- if context.only_driver_on_root == "1" -%>
-  [[ \${PBS_NODENUM} == "0" ]] && exit 0
-  <%- end -%>
+  echo "Launching worker $1 on ${HOSTNAME}"
+  #echo ${PBS_NODENUM}
+  #<%- if context.only_driver_on_root == "1" -%>
+  #[[ \${PBS_NODENUM} == "0" ]] && exit 0
+  #<%- end -%>
 
   # Load helper methods
   $(declare -f source_helpers)
@@ -194,13 +183,14 @@ chmod 700 "${SPARK_WORKER_SCRIPT}"
 
 # Launch workers
 echo "Launching workers..."
-<%- if torque_cluster %>
-for ((i=0; i<<%= num_workers %>; i++)); do
-  pbsdsh -u -- "${SPARK_WORKER_SCRIPT}" ${i} &
+echo "Total workers ..." <%= num_workers * (context.pbs_select.to_i - 1) %>
+
+worker=0
+
+export LD_PRELOAD=/usr/lib64/libcrypto.so.1.1:$LD_PRELOAD
+for ((j=0; j<<%= num_workers %>; j++)); do
+  pssh -i -H "$(cat $PBS_NODEFILE | uniq | tail -n +2)" "${SPARK_WORKER_SCRIPT} ${j}"
 done
-<%- else -%>
-srun --export ALL --ntasks <%= num_workers %> "${SPARK_WORKER_SCRIPT}" &
-<%- end -%>
 
 #
 # Launch Jupyter with PySpark

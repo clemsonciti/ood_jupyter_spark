@@ -34,7 +34,7 @@ cd "${NOTEBOOK_ROOT}"
 echo "TTT - $(date)"
 
 # Setup Jupyter Notebook environment
-module load ondemand/project xalt/latest <%= context.version %>
+module load anaconda3/<%= context.anaconda_version %>-gcc/8.3.1 spark/<%= context.spark_version %>-gcc/8.3.1
 module list
 
 echo "TTT - $(date)"
@@ -48,4 +48,4 @@ echo "TTT - $(date)"
 
 # Launch Jupyter Notebook interface to Spark
 set -x
-jupyter <%= context.jupyterlab_switch == "1" ? "lab" : "notebook" %> --config="${CONFIG_FILE}"
+jupyter lab --config="${CONFIG_FILE}"

@@ -1,27 +1,17 @@
-<%-
-
-  base_slurm_args = if bc_num_slots.blank?
-                      ["--nodes", "1", "--exclusive"]
-                    else
-                      ["--nodes", "#{bc_num_slots}", "--exclusive"]
-                    end
-
-  slurm_args =  case node_type
-                when "hugemem"
-                  partition = bc_num_slots.to_i > 1 ? "hugemem-parallel" : "hugemem"
-                  base_slurm_args + ["--partition", partition]
-                else
-                  base_slurm_args
-                end
-
--%>
+# Job submission configuration file
+#
 ---
+
 batch_connect:
   template: "basic"
-  conn_params: [ "tutorials_root" ]
+
 script:
-  accounting_id: "<%= account %>"
   native:
-  <%- slurm_args.each do |arg| %>
-    - "<%= arg %>"
-  <%- end %>
+    - "-N"
+    - "j_spark"
+    - "-q"
+    - "<%= pbs_queue %>"
+    - "-l"
+    - "select=<%= pbs_select %>:ncpus=<%= pbs_ncpus %>:mpiprocs=<%= pbs_ncpus %>:mem=<%= pbs_mem %>:interconnect=<%= pbs_interconnect %>:ngpus=<%= pbs_ngpus %>:gpu_model=<%= pbs_gpu_model %>,walltime=<%= pbs_walltime %>"
+
+
