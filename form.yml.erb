@@ -110,13 +110,14 @@ attributes:
     widget: "select"
     value: "any"
     options:
-      - ["any","any"]
-      - ["1g - Ethernet older phases 1-6","1g"]
-      - ["1ge - Ethernet phase 0 (bigmem queue","1ge"]
-      - ["10g - Ethernet phase 7-19 and phase 0 (bigmem queue)","10ge"]
-      - ["25g - Ethernet phase 7-19","25ge"]
-      - ["56g - Ethernet phase 7-19","56g"]
-      - ["100g - Ethernet phase 18 and above","100g"]
+      - ["any",""]
+      - ["1g - Ethernet older phases 1-6",":interconnect=1g"]
+      - ["10g - Ethernet phase 7-18 and phase 0 (bigmem queue)","interconnect=10ge"]
+      - ["25g - Ethernet phase 18b-27",":interconnect=25ge"]
+      - ["56g - Ethernet phase 7-17",":interconnect=56g"]
+      - ["fdr - Infiniband phase 7-17",":interconnect=fdr"]
+      - ["hdr - Infiniband phase 18 and above",":interconnect=hdr"]
+      - ["100g - Ethernet phase 18 and above",":interconnect=100g"]
 
   pbs_walltime:
     label: "Walltime"
