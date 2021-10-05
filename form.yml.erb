@@ -85,25 +85,25 @@ attributes:
   pbs_ngpus:
     label: "Number of GPUs per chunk (ngpus)"
     widget: "select"
-    value: "0"
+    value: ""
     options:
-      - ["None","0"]
-      - ["1","1"]
-      - ["2","2"]
-      - ["4","4"]
+      - ["None",""]
+      - ["1",":ngpus=1"]
+      - ["2",":ngpus=2"]
+      - ["4",":ngpus=4"]
 
   pbs_gpu_model:
     label: "GPU Model (gpu_model)"
     widget: "select"
-    value: "none"
+    value: ""
     options:
-      - ["None","any"]
-      - ["Any", "any"]
-      - ["K20","k20"]
-      - ["K40","k40"]
-      - ["P100","p100"]
-      - ["V100","v100"]
-      - ["V100 with NVLink","v100nv"]
+      - ["None",""]
+      - ["Any", ":gpu_model=any"]
+      - ["K20",":gpu_model=k20"]
+      - ["K40",":gpu_model=k40"]
+      - ["P100",":gpu_model=p100"]
+      - ["V100",":gpu_model=v100"]
+      - ["V100 with NVLink",":gpu_model=v100nv"]
 
   pbs_interconnect:
     label: "Interconnect"
