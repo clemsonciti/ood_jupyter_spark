@@ -27,65 +27,42 @@ form:
   - pbs_interconnect
   - pbs_walltime
   - pbs_queue
+  - pbs_extras
   - spark_version
-  - anaconda_version
+  - modules
   - num_workers
   - only_driver_on_root
   - bc_email_on_started
 
 attributes:
+  # Palmetto PBS specific options
   pbs_select:
     label: "Number of resource chunks (select)"
-    widget: "select"
     value: "1"
-    options:
-      - ["1","1"]
-      - ["2","2"]
-      - ["4","4"]
-      - ["8","8"]
       
   pbs_ncpus:
     label: "CPU cores per chunk (ncpus)"
-    widget: "select"
     value: "1"
-    options:
-      - ["1","1"]
-      - ["2","2"]
-      - ["4","4"]
-      - ["8","8"]
-      - ["16","16"]
-      - ["20","20"]
-      - ["24","24"]
-      - ["28","28"]
-      - ["32 (bigmem queue only)","32"]
-      - ["40","40"]
-      - ["64 (bigmem queue only)","64"]
-      - ["80 (bigmem queue only)","80"]
+    help: |
+      <small> - Typical Palmetto compute nodes have <b>8, 12, 16, 20, 24, 28, 40, and 56</b> cores.<br>
+      - DGX nodes have <b>128</b> cores.<br>
+      - Bigmem nodes have <b>24, 32, 40, and 80</b> cores.
+      - <b>Users can request any number of cores that is smaller than the number of available cores.</b>
+      </small>
       
   pbs_mem:
     label: "Amount of memory per chunk (mem)"
-    widget: "select"
     value: "1gb"
-    options:
-      - ["1gb","1gb"]
-      - ["2gb","2gb"]
-      - ["4gb","4gb"]
-      - ["6gb","6gb"]
-      - ["14gb","14gb"]
-      - ["30gb","30gb"]
-      - ["62gb","62gb"]
-      - ["120gb","120gb"]
-      - ["370gb","370gb"]
-      - ["505gb (bigmem queue only)","505gb"]
-      - ["750gb (bigmem queue only)","750gb"]
-      - ["1000gb (bigmem queue only)","1000gb"]      
-      - ["1500gb (bigmem queue only)","1500gb"]
-      - ["2000gb (bigmem queue only)","2000gb"]
+    help: |
+      <small> - Typical Palmetto compute nodes have <b>15gb, 30gb, 46gb, 62gb, 125gb, 372gb, 748gb, and 990gb</b> of memory.<br>
+      - DGX nodes have <b>990gb</b> of memory.<br>
+      - Bigmem nodes have <b>500gb and 750gb</b> and <b>1tb and 1.5tb</b> of memory.
+      </small>
 
   pbs_ngpus:
     label: "Number of GPUs per chunk (ngpus)"
     widget: "select"
-    value: ""
+    value: "0"
     options:
       - ["None",""]
       - ["1",":ngpus=1"]
@@ -95,7 +72,7 @@ attributes:
   pbs_gpu_model:
     label: "GPU Model (gpu_model)"
     widget: "select"
-    value: ""
+    value: "none"
     options:
       - ["None",""]
       - ["Any", ":gpu_model=any"]
@@ -121,17 +98,21 @@ attributes:
 
   pbs_walltime:
     label: "Walltime"
-    widget: "select"
     value: "00:30:00"
-    options:
-      - ["30 minutes","00:30:00"]
-      - ["1 hours","01:00:00"]
-      - ["2 hours","02:00:00"]
-      - ["4 hours","04:00:00"]
-      - ["16 hours","16:00:00"]
-      - ["24 hours","24:00:00"]
-      - ["72 hours","72:00:00"]
-
+    help: |
+      <small> - Walltime format is <b>hh:mm:ss</b>.<br>
+      - Phase 1 through 6 nodes can be reserved up to 336 hours.<br> 
+      - Phase 7 through 27 nodes can be reserved up to 72 hours. 
+      </small>
+      
+  pbs_extras:
+    label: "Extra PBS resource allocation request"
+    value: ""
+    help: |
+      <small>- Enter the additional resource request just like how you would in a command line environment.<br>
+      - Each request should start with a colon <b>:</b> sign. <br>
+      - For example: <b>:chip_type=e5-2665</b></small>
+      
   pbs_queue:
     label: "Queue"
     required: true
@@ -154,6 +135,24 @@ attributes:
       <%- end -%>
     <%- end -%>
 
+  modules: 
+    label: "Anaconda Version"
+    widget: "select"
+    required: true
+    value: "anaconda3/2019.10-gcc/8.3.1"
+    options:
+      - ["anaconda3/2019.10-gcc/8.3.1","anaconda3/2019.10-gcc/8.3.1"]
+      - ["anaconda3/2020.07-gcc/8.3.1","anaconda3/2020.07-gcc/8.3.1"]
+      - ["anaconda3/2021.05-gcc/8.3.1","anaconda3/2021.05-gcc/8.3.1"]
+
+  pbs_modules:
+    label: "List of modules to be loaded, separate by an empty space"
+    value: ""
+    help: |
+      <small> Provide a space-separated list of modules to be loaded. <br>
+      - For example: <b>openjdk/11.0.2-gcc/8.3.1 jags/4.3.0-gcc/8.3.1</b>
+      </small>
+
   spark_version:
     widget: select
     label: "Spark version"
@@ -161,14 +160,6 @@ attributes:
       - "2.4.8"
       - "3.1.2"
       
-  anaconda_version:
-    widget: select
-    label: "Anaconda 3 version"
-    options:
-      - "2019.10"
-      - "2020.07"
-      - "2021.05"
-  
   num_workers:
     widget: "number_field"
     value: "1"

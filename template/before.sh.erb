@@ -78,7 +78,7 @@ module purge
 # Load the runtime environment
 runtime_env() {
   module purge
-  module load anaconda3/<%= context.anaconda_version %>-gcc/8.3.1 spark/<%= context.spark_version %>-gcc/8.3.1
+  module load <%= context.modules %> spark/<%= context.spark_version %>-gcc/8.3.1
   export SPARK_HOME=$SPARK_ROOT
   export HADOOP_HOME="/software/spackages/linux-centos8-x86_64/gcc-8.3.1/hadoop-3.2.1-lux74iyfcxxzatxh4em67xezesi4z4i4"
   export SPARK_DIST_CLASSPATH=$(${HADOOP_HOME}/bin/hadoop classpath)
