@@ -1,6 +1,6 @@
 <%-
-  avail_cores = context.pbs_ncpus.to_i
-  avail_mem   = context.pbs_mem.to_i
+  avail_cores = context.pbs_ncpus.to_i 
+  avail_mem   = context.pbs_mem.to_i - 2
   num_workers = context.num_workers.to_i
   num_nodes = context.pbs_select.to_i
   torque_cluster = OodAppkit.clusters[context.cluster].job_config[:adapter] == 'torque'
