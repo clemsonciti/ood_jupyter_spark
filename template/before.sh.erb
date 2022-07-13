@@ -53,12 +53,12 @@ export JUPYTER_RUNTIME_DIR="$JUPYTER_DATA_DIR/runtime"
 # The `$CONFIG_FILE` environment variable is exported as it is used in the main
 # `script.sh.erb` file when launching the Jupyter Notebook server.
 export CONFIG_FILE="${PWD}/config.py"
+export JUPYTER_CONFIG_DIR="${PWD}"
 
 # Generate Jupyter configuration file with secure file permissions
 (
 umask 077
 cat > "${CONFIG_FILE}" << EOL
-c.JupyterApp.config_file_name = 'ondemand_config'
 c.KernelSpecManager.ensure_native_kernel = False
 c.NotebookApp.ip = '*'
 c.NotebookApp.port = ${port}
@@ -67,10 +67,13 @@ c.NotebookApp.password = u'sha1:${SALT}:${PASSWORD_SHA1}'
 c.NotebookApp.base_url = '/node/${host}/${port}/'
 c.NotebookApp.open_browser = False
 c.NotebookApp.allow_origin = '*'
-c.NotebookApp.notebook_dir = '${NOTEBOOK_ROOT}'
+c.ServerApp.root_dir = '${HOME}'
 c.NotebookApp.disable_check_xsrf = True
+c.ServerApp.jpserver_extensions = {"jupyterlab": True}
+c.NotebookApp.nbserver_extensions = {"jupyterlab": True}
 EOL
 )
+
 
 # Clean the environment
 module purge
