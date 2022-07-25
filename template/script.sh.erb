@@ -34,7 +34,7 @@ cd "${NOTEBOOK_ROOT}"
 echo "TTT - $(date)"
 
 # Setup Jupyter Notebook environment
-module load <%= context.modules %> spark/<%= context.spark_version %>-gcc/8.3.1
+module load <%= context.modules %> spark/<%= context.spark_version %>-gcc/9.5.0
 module list
 
 echo "TTT - $(date)"
