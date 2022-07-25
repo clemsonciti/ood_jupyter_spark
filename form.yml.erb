@@ -139,11 +139,9 @@ attributes:
     label: "Anaconda Version"
     widget: "select"
     required: true
-    value: "anaconda3/2019.10-gcc/8.3.1"
+    value: "anaconda3/2022.05-gcc/9.5.0"
     options:
-      - ["anaconda3/2019.10-gcc/8.3.1","anaconda3/2019.10-gcc/8.3.1"]
-      - ["anaconda3/2020.07-gcc/8.3.1","anaconda3/2020.07-gcc/8.3.1"]
-      - ["anaconda3/2021.05-gcc/8.3.1","anaconda3/2021.05-gcc/8.3.1"]
+      - ["anaconda3/2022.05-gcc/9.5.0","anaconda3/2022.05-gcc/9.5.0"]
 
   pbs_modules:
     label: "List of modules to be loaded, separate by an empty space"
@@ -157,8 +155,8 @@ attributes:
     widget: select
     label: "Spark version"
     options:
-      - "2.4.8"
-      - "3.1.2"
+      - "2.4.7"
+      - "3.1.1"
       
   num_workers:
     widget: "number_field"
