@@ -6,9 +6,9 @@
   torque_cluster = OodAppkit.clusters[context.cluster].job_config[:adapter] == 'torque'
 
   py4j =  case context.spark_version
-          when "2.4.5"
+          when "2.4.7"
             "py4j-0.10.7-src.zip"
-          when "3.1.2"
+          when "3.1.1"
             "py4j-0.10.9-src.zip"
           # just in case we update spark_version without updating this!
           else
@@ -81,9 +81,9 @@ module purge
 # Load the runtime environment
 runtime_env() {
   module purge
-  module load <%= context.modules %> spark/<%= context.spark_version %>-gcc/8.3.1
+  module load <%= context.modules %> spark/<%= context.spark_version %>-gcc/9.5.0
   export SPARK_HOME=$SPARK_ROOT
-  export HADOOP_HOME="/software/spackages/linux-centos8-x86_64/gcc-8.3.1/hadoop-3.2.1-lux74iyfcxxzatxh4em67xezesi4z4i4"
+  export HADOOP_HOME="/software/spackages/linux-rocky8-x86_64/gcc-9.5.0/hadoop-3.3.2-okmjatecqewkbetivynrnipp4y5slhp4"
   export SPARK_DIST_CLASSPATH=$(${HADOOP_HOME}/bin/hadoop classpath)
   # Disable randomized hash for string in Python 3.3+
   export PYTHONHASHSEED=0
