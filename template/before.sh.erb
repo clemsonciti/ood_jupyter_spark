@@ -190,7 +190,6 @@ echo "Total workers ..." <%= num_workers * (context.pbs_select.to_i - 1) %>
 
 worker=0
 
-export LD_PRELOAD=/usr/lib64/libcrypto.so.1.1:$LD_PRELOAD
 for ((j=0; j<<%= num_workers %>; j++)); do
   pssh -i -H "$(cat $PBS_NODEFILE | uniq | tail -n +2)" "${SPARK_WORKER_SCRIPT} ${j}"
 done
